@@ -1,0 +1,105 @@
+
+################################################################################
+#Part 1: Show how land use has changed#
+################################################################################   
+
+def plot_world_designations(agro_file, forest_file):
+    """Takes in agro_file and forest_file datafiles and plots the World aggregates
+    for % agricultural land designation, %  forest land designation, and 
+    % other land designation as three separate lines against time in years 
+    (from 1990 to 2014).
+    
+    Params:
+        agro_file, a CSV file
+        forest_file, a CSV file
+    
+    Returns:
+        plots "World" (aggregate) data in a line graph
+        returns None
+    """    
+    
+    agro_df = create_df(agro_file)
+    forest_df = create_df(forest_file)
+    other_df = 100 - agro_df - forest_df
+    
+    agro_series = agro_df['World']
+    forest_series = forest_df['World']    
+    other_series = other_df['World']
+    
+    world_df = pd.concat([agro_series, forest_series, other_series], axis=1)
+    world_df.columns = ['% Agricultural', '% Forest', '% Other']    
+    
+    x = world_df.index
+    y1 = world_df['% Agricultural']
+    y2 = world_df['% Forest']
+    y3 = world_df['% Other']
+    
+    plt.plot(x, y1, 'r', x, y2, 'g', x, y3, 'b')    
+    L = plt.legend(loc='best')
+    L.get_texts()[0].set_text('Agricultural Land')
+    L.get_texts()[1].set_text('Forest Land')
+    L.get_texts()[2].set_text('Other Land')
+    
+    plt.suptitle('World Land Designation Percentages', fontsize=14)
+    
+    plt.show()
+    #plt.savefig('world_designations.png')
+    
+def plot_regression_scatter(master_df, year):
+    """Takes master DataFrame and plots the % land designation for each type
+    of land (agro, forest, and other) against GDP as a scatter plot, where
+    each point represents a specific country's % land designation. In total, 3
+    graphs are produced for each of the years in question (1990, 2002, 2014).
+    A best-fit line from our regression is also graphed on each figure.
+    
+    Params:
+        year, an string number representing the year this master_df is from
+        master_df, a datafram containing columns 'Country Name' (index column),
+            'GDP_N', '% Agro', '% Forest', and '% Other'
+            
+    Returns:
+        plots 9 scatter plots, one for each type of land designation per year
+            for the years 1990, 2002, 2014, each containing a best-fit line
+        returns None
+    """
+    
+    agro_series = master_df['Agro']
+    forest_series = master_df['Forest']    
+    gdp_series = master_df['GDP_N']
+    
+    agro_df = pd.concat([agro_series, gdp_series], axis=1)
+    
+    forest_df = pd.concat([forest_series, gdp_series], axis=1)
+    
+    
+    fig, axes = plt.subplots(nrows=2, ncols=1)
+    
+    agro_df.plot.scatter('Agro', 'GDP_N', ax=axes[0], title='% Agricultural Land')
+
+    forest_df.plot.scatter('Forest', 'GDP_N', ax=axes[1], title='% Forested Land')
+
+    
+    title = 'Scatter Plot for ' + year + ' Data'
+    fig.suptitle(title, fontsize=14)
+    plt.tight_layout()    
+    plt.subplots_adjust(top=.88)
+    plt.show()
+    
+
+################################################################################
+#Part X: Main Function
+################################################################################
+
+def main():
+
+    
+    # plot graphs:
+    #
+    plot_world_designations(agro_input, forest_input)
+    #          
+    plot_regression_scatter(master_14, '2014')
+    #plt.savefig('initial_scatter_14.png')
+    plot_regression_scatter(master_90, '1990')
+    #plt.savefig('initial_scatter_90.png')
+            
+
